@@ -4,6 +4,7 @@ from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, T
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.Obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+from dino_runner.components.Obstacles.S_attack_manager import BoneManager
 class Game:
     def __init__(self):
         pygame.init()
@@ -19,6 +20,7 @@ class Game:
         self.obstacle_manager = ObstacleManager()
         self.points = 0 
         self.power_up_manager = PowerUpManager()
+        self.bone_obstacle = BoneManager()
 
     def run(self):
         # Game loop: events - update - draw
@@ -43,6 +45,7 @@ class Game:
         self.player.update(user_input)
         self.obstacle_manager.update(self)
         self.power_up_manager.update(self.points, self.game_speed, self.player)
+        self.bone_obstacle.update(self)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -51,7 +54,9 @@ class Game:
         self.player.draw (self.screen)
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
-        self.score()
+        self.bone_obstacle.draw(self.screen)
+        self.score()    
+        self.print_points(self.screen, self.points)
         pygame.display.update()
         pygame.display.flip()
 
@@ -69,3 +74,10 @@ class Game:
         if self.points % 100 == 0:
             self.game_speed += 1
         self.player.check_invencibility(self.screen)
+    
+    def print_points(self,screen,points):
+        font = pygame.font.Font('freesansbold.ttf', 18)
+        text = font.render(f'{int(points/2)}', True, (0,0,0))
+        text_rect = text.get_rect()
+        text_rect.center = (SCREEN_WIDTH-30,40)
+        screen.blit(text, text_rect)
